@@ -1,9 +1,11 @@
 package com.xingray.httpclient;
 
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Request {
@@ -14,7 +16,7 @@ public class Request {
     private String url;
     private final Headers.Builder headerBuilder;
     private String mMediaType;
-    private final HashMap<String, String> params;
+    private final HashMap<String, Object> params;
 
     public Request() {
         builder = new okhttp3.Request.Builder();
@@ -34,12 +36,12 @@ public class Request {
         headerBuilder.add(name, value);
     }
 
-    public void addHeaders(Map<String, String> headers) {
+    public void addHeaders(List<KeyValue<String, String>> headers) {
         if (headers == null || headers.isEmpty()) {
             return;
         }
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            addHeader(entry.getKey(), entry.getValue());
+        for (KeyValue<String, String> keyValue : headers) {
+            addHeader(keyValue.getKey(), keyValue.getValue());
         }
     }
 
@@ -47,7 +49,7 @@ public class Request {
         mMediaType = mediaType;
     }
 
-    public void addParam(String name, String value) {
+    public void addParam(String name, Object value) {
         params.put(name, value);
     }
 
@@ -56,11 +58,14 @@ public class Request {
     }
 
     okhttp3.Request build() {
-        builder.url(url).headers(headerBuilder.build());
         if (method == Method.GET) {
-            builder.get();
+            if (!params.isEmpty()) {
+                url += "?" + buildParams();
+            }
+            builder.url(url).headers(headerBuilder.build()).get();
         } else if (method == Method.POST) {
-            builder.post(RequestBody.create(buildParams(), okhttp3.MediaType.parse(mMediaType)));
+            RequestBody body = RequestBody.create(buildParams(), MediaType.parse(mMediaType));
+            builder.url(url).headers(headerBuilder.build()).post(body);
         }
         return builder.build();
     }
@@ -72,7 +77,7 @@ public class Request {
 
         boolean isFirst = true;
         StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (!isFirst) {
                 builder.append('&');
             }
