@@ -1,5 +1,7 @@
 package com.xingray.httpclient;
 
+import okhttp3.ResponseBody;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -12,7 +14,8 @@ public class Response implements Closeable {
     }
 
     public String bodyString() throws IOException {
-        return mResponse.body().string();
+        ResponseBody body = mResponse.body();
+        return body == null ? null : body.string();
     }
 
     @Override

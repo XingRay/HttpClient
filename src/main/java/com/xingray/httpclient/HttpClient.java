@@ -33,14 +33,9 @@ public class HttpClient {
                 .build();
     }
 
-    public String doRequest(Request request) {
-        try {
-            try (Response response = new Response(client.newCall(request.build()).execute())) {
-                return response.bodyString();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public String doRequest(Request request) throws IOException {
+        try (Response response = new Response(client.newCall(request.build()).execute())) {
+            return response.bodyString();
         }
-        return null;
     }
 }
