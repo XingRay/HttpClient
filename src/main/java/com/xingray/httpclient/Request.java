@@ -78,12 +78,16 @@ public class Request {
         boolean isFirst = true;
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value == null) {
+                continue;
+            }
             if (!isFirst) {
                 builder.append('&');
             }
             isFirst = false;
-
-            builder.append(entry.getKey()).append('=').append(entry.getValue());
+            builder.append(key).append('=').append(value);
         }
         return builder.toString();
     }
