@@ -53,7 +53,7 @@ public class Request {
         params.put(name, value);
     }
 
-    public void addParams(Map<String, Object> params) {
+    public void addParams(Map<String, ?> params) {
         this.params.putAll(params);
     }
 
